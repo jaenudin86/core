@@ -403,6 +403,7 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerService('Crypto', function (Server $c) {
 			return new Crypto($c->getConfig(), $c->getSecureRandom());
 		});
+		$this->registerAlias('OCP\Security\ICrypto', 'Crypto');
 		$this->registerService('Hasher', function (Server $c) {
 			return new Hasher($c->getConfig());
 		});
@@ -499,6 +500,12 @@ class Server extends ServerContainer implements IServerContainer {
 			$manager->registerProvider(new CacheMountProvider($config));
 			$manager->registerHomeProvider(new LocalHomeMountProvider());
 			$manager->registerHomeProvider(new ObjectHomeMountProvider($config));
+
+			// external storage
+			$manager->registerProvider(new \OC\Files\External\ConfigAdapter(
+				$c->query('UserStoragesService'),
+				$c->query('UserGlobalStoragesService')
+			));
 
 			return $manager;
 		});
@@ -675,8 +682,29 @@ class Server extends ServerContainer implements IServerContainer {
 			);
 		});
 		$this->registerService('StoragesBackendService', function (Server $c) {
-			return new StoragesBackendService($c->query('AllConfig'));
+			$service = new StoragesBackendService($c->query('AllConfig'));
+
+			// register auth mechanisms provided by core
+			$provider = new \OC\Files\External\Auth\CoreAuthMechanismProvider($c, [
+				// AuthMechanism::SCHEME_NULL mechanism
+				'OC\Files\External\Auth\NullMechanism',
+
+				// AuthMechanism::SCHEME_BUILTIN mechanism
+				'OC\Files\External\Auth\Builtin',
+
+				// AuthMechanism::SCHEME_PASSWORD mechanisms
+				'OC\Files\External\Auth\Password\Password',
+			]);
+
+			$service->registerAuthMechanismProvider($provider);
+
+			// force-load the session one as it will register hooks...
+			// TODO: obsolete it and use the TokenProvider to get the user's password from the session
+			$service->registerAuthMechanism($c->query('OC\Files\External\Auth\Password\SessionCredentials'));
+
+			return $service;
 		});
+		$this->registerAlias('OCP\Files\External\IStoragesBackendService', 'StoragesBackendService');
 		$this->registerService('GlobalStoragesService', function (Server $c) {
 			return new GlobalStoragesService(
 				$c->query('StoragesBackendService'),
@@ -726,6 +754,8 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerService('ThemeService', function ($c) {
 			return new ThemeService($this->getSystemConfig()->getValue('theme'));
 		});
+		$this->registerAlias('OCP\IUserSession', 'UserSession');
+		$this->registerAlias('OCP\Security\ICrypto', 'Crypto');
 	}
 
 	/**
@@ -1375,7 +1405,7 @@ class Server extends ServerContainer implements IServerContainer {
 	/**
 	 * Not a public API as of 8.2, wait for 9.0
 	 *
-	 * @return \OCA\Files_External\Service\GlobalStoragesService
+	 * @return \OC\Files\External\Service\GlobalStoragesService
 	 */
 	public function getGlobalStoragesService() {
 		return $this->query('GlobalStoragesService');
@@ -1384,7 +1414,7 @@ class Server extends ServerContainer implements IServerContainer {
 	/**
 	 * Not a public API as of 8.2, wait for 9.0
 	 *
-	 * @return \OCA\Files_External\Service\UserGlobalStoragesService
+	 * @return \OC\Files\External\Service\UserGlobalStoragesService
 	 */
 	public function getUserGlobalStoragesService() {
 		return $this->query('UserGlobalStoragesService');
