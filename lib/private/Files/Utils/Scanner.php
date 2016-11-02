@@ -117,7 +117,7 @@ class Scanner extends PublicEmitter {
 	public function backgroundScan($dir) {
 		$mounts = $this->getMounts($dir);
 		foreach ($mounts as $mount) {
-			if (is_null($mount->getStorage())) {
+			if (is_null($mount->getStorage()) || $mount->getStorage()->instanceOfStorage('\OC\Files\Storage\FailedStorage')) {
 				continue;
 			}
 			// don't scan the root storage

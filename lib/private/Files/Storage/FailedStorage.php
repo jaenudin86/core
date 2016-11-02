@@ -213,4 +213,8 @@ class FailedStorage extends Common {
 	public function getCache($path = '', $storage = null) {
 		return new FailedCache();
 	}
+
+	public function getScanner($path = '', $storage = null) {
+		return new FailedScanner();
+	}
 }
