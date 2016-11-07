@@ -26,6 +26,7 @@ namespace OC\Repair;
 
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 
 /**
  * Repairs shares with invalid data
@@ -96,11 +97,22 @@ class RepairInvalidShares implements IRepairStep {
 	private function adjustFileSharePermissions(IOutput $out) {
 		$mask = \OCP\Constants::PERMISSION_READ | \OCP\Constants::PERMISSION_UPDATE | \OCP\Constants::PERMISSION_SHARE;
 		$builder = $this->connection->getQueryBuilder();
+
+
+		if ($this->connection->getDatabasePlatform() instanceof OraclePlatform) {
+			$permsFunc = $builder->createFunction(
+				'bitand(' . $builder->getColumnName('permissions') . ', ' . $mask . ')'
+			);
+		} else {
+			$permsFunc = $builder->createFunction(
+				$builder->getColumnName('permissions') . ' & ' . $mask
+			);
+		}
 		$builder
 			->update('share')
-			->set('permissions', $builder->createFunction('permissions & ' . $mask))
+			->set('permissions', $permsFunc)
 			->where($builder->expr()->eq('item_type', $builder->expr()->literal('file')))
-			->andWhere($builder->expr()->neq('permissions', $builder->createFunction('permissions & ' . $mask)));
+			->andWhere($builder->expr()->neq('permissions', $permsFunc));
 
 		$updatedEntries = $builder->execute();
 		if ($updatedEntries > 0) {
