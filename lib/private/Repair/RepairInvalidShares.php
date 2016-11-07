@@ -105,7 +105,7 @@ class RepairInvalidShares implements IRepairStep {
 			);
 		} else {
 			$permsFunc = $builder->createFunction(
-				'cast(' . $builder->getColumnName('permissions') . ' as int) & ' . $mask
+				'(' . $builder->getColumnName('permissions') . ' & ' . $mask . ')'
 			);
 		}
 		$builder
