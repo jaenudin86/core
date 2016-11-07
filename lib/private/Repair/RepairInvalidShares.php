@@ -91,6 +91,24 @@ class RepairInvalidShares implements IRepairStep {
 	}
 
 	/**
+	 * Adjust file share permissions
+	 */
+	private function adjustFileSharePermissions(IOutput $out) {
+		$mask = \OCP\Constants::PERMISSION_READ | \OCP\Constants::PERMISSION_UPDATE | \OCP\Constants::PERMISSION_SHARE;
+		$builder = $this->connection->getQueryBuilder();
+		$builder
+			->update('share')
+			->set('permissions', $builder->createFunction('permissions & ' . $mask))
+			->where($builder->expr()->eq('item_type', $builder->expr()->literal('file')))
+			->andWhere($builder->expr()->neq('permissions', $builder->createFunction('permissions & ' . $mask)));
+
+		$updatedEntries = $builder->execute();
+		if ($updatedEntries > 0) {
+			$out->info('Fixed file share permissions for ' . $updatedEntries . ' shares');
+		}
+	}
+
+	/**
 	 * Remove shares where the parent share does not exist anymore
 	 */
 	private function removeSharesNonExistingParent(IOutput $out) {
@@ -135,6 +153,9 @@ class RepairInvalidShares implements IRepairStep {
 		if (version_compare($ocVersionFromBeforeUpdate, '9.1.0.9', '<')) {
 			// this situation was only possible before 9.1
 			$this->addShareLinkDeletePermission($out);
+		}
+		if (version_compare($ocVersionFromBeforeUpdate, '9.2.0.2', '<')) {
+			$this->adjustFileSharePermissions($out);
 		}
 
 		$this->removeSharesNonExistingParent($out);
