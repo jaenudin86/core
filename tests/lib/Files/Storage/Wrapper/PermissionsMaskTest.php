@@ -102,4 +102,20 @@ class PermissionsMaskTest extends \Test\Files\Storage\Storage {
 		$storage = $this->getMaskedStorage(Constants::PERMISSION_ALL - Constants::PERMISSION_CREATE);
 		$this->assertFalse($storage->fopen('foo', 'w'));
 	}
+
+	public function testRenameExistingFileNoUpdate() {
+		$this->sourceStorage->touch('foo');
+		$storage = $this->getMaskedStorage(Constants::PERMISSION_ALL - Constants::PERMISSION_UPDATE);
+		$this->assertFalse($storage->rename('foo', 'bar'));
+		$this->assertTrue($storage->file_exists('foo'));
+		$this->assertFalse($storage->file_exists('bar'));
+	}
+
+	public function testRenamePartFileNoUpdate() {
+		$this->sourceStorage->touch('foo.part');
+		$storage = $this->getMaskedStorage(Constants::PERMISSION_ALL - Constants::PERMISSION_UPDATE);
+		$this->assertTrue($storage->rename('foo.part', 'bar'));
+		$this->assertFalse($storage->file_exists('foo.part'));
+		$this->assertTrue($storage->file_exists('bar'));
+	}
 }

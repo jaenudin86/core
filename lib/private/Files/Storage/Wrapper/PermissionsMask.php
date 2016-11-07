@@ -77,7 +77,9 @@ class PermissionsMask extends Wrapper {
 	}
 
 	public function rename($path1, $path2) {
-		return $this->checkMask(Constants::PERMISSION_UPDATE) and parent::rename($path1, $path2);
+		// allow renaming part files
+		$isPartFile = pathinfo($path1, PATHINFO_EXTENSION) === 'part';
+		return ($isPartFile || $this->checkMask(Constants::PERMISSION_UPDATE)) && parent::rename($path1, $path2);
 	}
 
 	public function copy($path1, $path2) {
