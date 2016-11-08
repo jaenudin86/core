@@ -27,13 +27,11 @@ use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 use OCA\Files_External\Lib\LegacyDependencyCheckPolyfill;
 
-use OCA\Files_External\Lib\Auth\OAuth1\OAuth1;
-
 class Dropbox extends Backend {
 
 	use LegacyDependencyCheckPolyfill;
 
-	public function __construct(IL10N $l, OAuth1 $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('dropbox')
 			->addIdentifierAlias('\OC\Files\Storage\Dropbox') // legacy compat
@@ -44,7 +42,6 @@ class Dropbox extends Backend {
 			])
 			->addAuthScheme(AuthMechanism::SCHEME_OAUTH1)
 			->addCustomJs('dropbox')
-			->setLegacyAuthMechanism($legacyAuth)
 		;
 	}
 

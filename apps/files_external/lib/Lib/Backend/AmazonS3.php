@@ -33,7 +33,7 @@ class AmazonS3 extends Backend {
 
 	use LegacyDependencyCheckPolyfill;
 
-	public function __construct(IL10N $l, AccessKey $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('amazons3')
 			->addIdentifierAlias('\OC\Files\Storage\AmazonS3') // legacy compat
@@ -52,8 +52,7 @@ class AmazonS3 extends Backend {
 				(new DefinitionParameter('use_path_style', $l->t('Enable Path Style')))
 					->setType(DefinitionParameter::VALUE_BOOLEAN),
 			])
-			->addAuthScheme(AccessKey::SCHEME_AMAZONS3_ACCESSKEY)
-			->setLegacyAuthMechanism($legacyAuth)
+			->addAuthScheme(AccessKey::SCHEME_AMAZONS3_ACCESSKEY);
 		;
 	}
 

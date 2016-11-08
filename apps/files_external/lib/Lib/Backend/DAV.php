@@ -27,13 +27,11 @@ use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 use OCA\Files_External\Lib\LegacyDependencyCheckPolyfill;
 
-use OC\Files\External\Auth\Password\Password;
-
 class DAV extends Backend {
 
 	use LegacyDependencyCheckPolyfill;
 
-	public function __construct(IL10N $l, Password $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('dav')
 			->addIdentifierAlias('\OC\Files\Storage\DAV') // legacy compat
@@ -46,8 +44,7 @@ class DAV extends Backend {
 				(new DefinitionParameter('secure', $l->t('Secure https://')))
 					->setType(DefinitionParameter::VALUE_BOOLEAN),
 			])
-			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD)
-			->setLegacyAuthMechanism($legacyAuth)
+			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD);
 		;
 	}
 

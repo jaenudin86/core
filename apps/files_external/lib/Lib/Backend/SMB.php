@@ -28,14 +28,13 @@ use OCP\Files\External\Backend\Backend;
 use OCP\Files\External\IStorageConfig;
 use OCA\Files_External\Lib\LegacyDependencyCheckPolyfill;
 
-use OC\Files\External\Auth\Password\Password;
 use OCP\IUser;
 
 class SMB extends Backend {
 
 	use LegacyDependencyCheckPolyfill;
 
-	public function __construct(IL10N $l, Password $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('smb')
 			->addIdentifierAlias('\OC\Files\Storage\SMB') // legacy compat
@@ -50,7 +49,6 @@ class SMB extends Backend {
 					->setFlag(DefinitionParameter::FLAG_OPTIONAL),
 			])
 			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD)
-			->setLegacyAuthMechanism($legacyAuth)
 		;
 	}
 

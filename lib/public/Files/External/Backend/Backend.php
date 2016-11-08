@@ -115,37 +115,6 @@ class Backend implements \JsonSerializable {
 	}
 
 	/**
-	 * @param array $parameters storage parameters, for dynamic mechanism selection
-	 * @return AuthMechanism
- 	 * @since 9.2.0
-	 */
-	public function getLegacyAuthMechanism(array $parameters = []) {
-		if (is_callable($this->legacyAuthMechanism)) {
-			return call_user_func($this->legacyAuthMechanism, $parameters);
-		}
-		return $this->legacyAuthMechanism;
-	}
-
-	/**
-	 * @param AuthMechanism $authMechanism
-	 * @return self
- 	 * @since 9.2.0
-	 */
-	public function setLegacyAuthMechanism(AuthMechanism $authMechanism) {
-		$this->legacyAuthMechanism = $authMechanism;
-		return $this;
-	}
-
-	/**
-	 * @param callable $callback dynamic auth mechanism selection
-	 * @return self
- 	 * @since 9.2.0
-	 */
-	public function setLegacyAuthMechanismCallback(callable $callback) {
-		$this->legacyAuthMechanism = $callback;
-	}
-
-	/**
 	 * Serialize into JSON for client-side JS
 	 *
 	 * @return array

@@ -26,11 +26,9 @@ use OCP\Files\External\DefinitionParameter;
 use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 
-use OC\Files\External\Auth\Password\Password;
-
 class OwnCloud extends Backend {
 
-	public function __construct(IL10N $l, Password $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('owncloud')
 			->addIdentifierAlias('\OC\Files\Storage\OwnCloud') // legacy compat
@@ -44,7 +42,6 @@ class OwnCloud extends Backend {
 					->setType(DefinitionParameter::VALUE_BOOLEAN),
 			])
 			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD)
-			->setLegacyAuthMechanism($legacyAuth)
 		;
 	}
 

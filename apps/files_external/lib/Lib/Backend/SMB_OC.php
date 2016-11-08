@@ -26,7 +26,6 @@ use OCP\Files\External\DefinitionParameter;
 use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 use OCP\Files\External\IStoragesBackendService;
-use OC\Files\External\Auth\Password\SessionCredentials;
 use OCP\Files\External\IStorageConfig;
 use OCA\Files_External\Lib\LegacyDependencyCheckPolyfill;
 use OCA\Files_External\Lib\Backend\SMB;
@@ -39,7 +38,7 @@ class SMB_OC extends Backend {
 
 	use LegacyDependencyCheckPolyfill;
 
-	public function __construct(IL10N $l, SessionCredentials $legacyAuth, SMB $smbBackend) {
+	public function __construct(IL10N $l, SMB $smbBackend) {
 		$this
 			->setIdentifier('\OC\Files\Storage\SMB_OC')
 			->setStorageClass('\OCA\Files_External\Lib\Storage\SMB')
@@ -55,7 +54,6 @@ class SMB_OC extends Backend {
 			])
 			->setPriority(IStoragesBackendService::PRIORITY_DEFAULT - 10)
 			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD)
-			->setLegacyAuthMechanism($legacyAuth)
 			->deprecateTo($smbBackend)
 		;
 	}

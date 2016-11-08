@@ -26,11 +26,9 @@ use OCP\Files\External\DefinitionParameter;
 use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 
-use OC\Files\External\Auth\Password\Password;
-
 class SFTP extends Backend {
 
-	public function __construct(IL10N $l, Password $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('sftp')
 			->addIdentifierAlias('\OC\Files\Storage\SFTP') // legacy compat
@@ -43,7 +41,6 @@ class SFTP extends Backend {
 			])
 			->addAuthScheme(AuthMechanism::SCHEME_PASSWORD)
 			->addAuthScheme(AuthMechanism::SCHEME_PUBLICKEY)
-			->setLegacyAuthMechanism($legacyAuth)
 		;
 	}
 

@@ -25,12 +25,11 @@ use OCP\IL10N;
 use OCP\Files\External\DefinitionParameter;
 use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
-use OCA\Files_External\Lib\Auth\PublicKey\RSA;
 use OCA\Files_External\Lib\Backend\SFTP;
 
 class SFTP_Key extends Backend {
 
-	public function __construct(IL10N $l, RSA $legacyAuth, SFTP $sftpBackend) {
+	public function __construct(IL10N $l, SFTP $sftpBackend) {
 		$this
 			->setIdentifier('\OC\Files\Storage\SFTP_Key')
 			->setStorageClass('\OCA\Files_External\Lib\Storage\SFTP')
@@ -41,7 +40,6 @@ class SFTP_Key extends Backend {
 					->setFlag(DefinitionParameter::FLAG_OPTIONAL),
 			])
 			->addAuthScheme(AuthMechanism::SCHEME_PUBLICKEY)
-			->setLegacyAuthMechanism($legacyAuth)
 			->deprecateTo($sftpBackend)
 		;
 	}

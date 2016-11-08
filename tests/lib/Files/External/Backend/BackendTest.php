@@ -71,19 +71,4 @@ class BackendTest extends \Test\TestCase {
 
 		$this->assertEquals($expectedSuccess, $backend->validateStorage($storageConfig));
 	}
-
-	public function testLegacyAuthMechanismCallback() {
-		$backend = new Backend();
-		$backend->setLegacyAuthMechanismCallback(function(array $params) {
-			if (isset($params['ping'])) {
-				return 'pong';
-			}
-			return 'foobar';
-		});
-
-		$this->assertEquals('pong', $backend->getLegacyAuthMechanism(['ping' => true]));
-		$this->assertEquals('foobar', $backend->getLegacyAuthMechanism(['other' => true]));
-		$this->assertEquals('foobar', $backend->getLegacyAuthMechanism());
-	}
-
 }

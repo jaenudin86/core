@@ -26,11 +26,10 @@ use OCP\Files\External\Auth\AuthMechanism;
 use OCP\Files\External\Backend\Backend;
 use OCP\Files\External\DefinitionParameter;
 use OCP\Files\External\IStoragesBackendService;
-use OC\Files\External\Auth\NullMechanism;
 
 class Local extends Backend {
 
-	public function __construct(IL10N $l, NullMechanism $legacyAuth) {
+	public function __construct(IL10N $l) {
 		$this
 			->setIdentifier('local')
 			->addIdentifierAlias('\OC\Files\Storage\Local') // legacy compat
@@ -42,7 +41,6 @@ class Local extends Backend {
 			->setAllowedVisibility(IStoragesBackendService::VISIBILITY_ADMIN)
 			->setPriority(IStoragesBackendService::PRIORITY_DEFAULT + 50)
 			->addAuthScheme(AuthMechanism::SCHEME_NULL)
-			->setLegacyAuthMechanism($legacyAuth)
 		;
 	}
 
